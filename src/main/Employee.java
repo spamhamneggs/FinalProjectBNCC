@@ -8,14 +8,30 @@ abstract class Employee {
 	private double salary; // Employee's current salary
 
 	// Constructor to initialise employee details
-	protected Employee(String employeeCode, String name, String sex, double salary) {
+	protected Employee(String employeeCode, String name, String sex) {
 		this.employeeCode = employeeCode;
 		this.name = name;
 		this.sex = sex;
-		this.salary = salary;
+		this.salary = this.getBaseSalary(); // Set initial salary based on position
 	}
 
-	// Getter and setter methods for each attribute
+	// Abstract method to be implemented by each employee type
+	protected abstract double getBaseSalary();
+
+	// Get bonus percentage for the position
+	protected abstract double getBonusPercentage();
+
+	// Apply bonus to salary
+	public void applyBonus() {
+		this.salary = this.salary * (1 + getBonusPercentage());
+	}
+
+	// Reset salary to base
+	public void resetToBaseSalary() {
+		this.salary = this.getBaseSalary();
+	}
+
+	// Getter and setter methods
 	public String getEmployeeCode() {
 		return employeeCode;
 	}
@@ -49,21 +65,60 @@ abstract class Employee {
 	}
 }
 
-// Concrete subclasses representing different employee positions
+// Concrete subclasses with position-specific salary logic
 class Manager extends Employee {
-	public Manager(String employeeCode, String name, String sex, double salary) {
-		super(employeeCode, name, sex, salary);
+	private static final double BASE_SALARY = 8000000;
+	private static final double BONUS_PERCENTAGE = 0.10;
+
+	public Manager(String employeeCode, String name, String sex) {
+		super(employeeCode, name, sex);
+	}
+
+	@Override
+	protected double getBaseSalary() {
+		return BASE_SALARY;
+	}
+
+	@Override
+	protected double getBonusPercentage() {
+		return BONUS_PERCENTAGE;
 	}
 }
 
 class Supervisor extends Employee {
-	public Supervisor(String employeeCode, String name, String sex, double salary) {
-		super(employeeCode, name, sex, salary);
+	private static final double BASE_SALARY = 6000000;
+	private static final double BONUS_PERCENTAGE = 0.075;
+
+	public Supervisor(String employeeCode, String name, String sex) {
+		super(employeeCode, name, sex);
+	}
+
+	@Override
+	protected double getBaseSalary() {
+		return BASE_SALARY;
+	}
+
+	@Override
+	protected double getBonusPercentage() {
+		return BONUS_PERCENTAGE;
 	}
 }
 
 class Admin extends Employee {
-	public Admin(String employeeCode, String name, String sex, double salary) {
-		super(employeeCode, name, sex, salary);
+	private static final double BASE_SALARY = 4000000;
+	private static final double BONUS_PERCENTAGE = 0.05;
+
+	public Admin(String employeeCode, String name, String sex) {
+		super(employeeCode, name, sex);
+	}
+
+	@Override
+	protected double getBaseSalary() {
+		return BASE_SALARY;
+	}
+
+	@Override
+	protected double getBonusPercentage() {
+		return BONUS_PERCENTAGE;
 	}
 }

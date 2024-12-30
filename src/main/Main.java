@@ -27,23 +27,23 @@ public class Main {
 
 			// Route to appropriate method based on user choice
 			switch (choose) {
-			case 1:
-				insertEmployee();
-				break;
-			case 2:
-				viewEmployees();
-				break;
-			case 3:
-				updateEmployee();
-				break;
-			case 4:
-				deleteEmployee();
-				break;
-			case 5:
-				System.out.println("\nTerima kasih telah mengunakan program ini!");
-				break;
-			default:
-				System.out.println("Pilihan invalid!");
+				case 1:
+					insertEmployee();
+					break;
+				case 2:
+					viewEmployees();
+					break;
+				case 3:
+					updateEmployee();
+					break;
+				case 4:
+					deleteEmployee();
+					break;
+				case 5:
+					System.out.println("\nTerima kasih telah mengunakan program ini!");
+					break;
+				default:
+					System.out.println("Pilihan invalid!");
 			}
 		} while (choose != 5);
 	}
@@ -57,17 +57,6 @@ public class Main {
 		code.append("-");
 		code.append(String.format("%04d", random.nextInt(10000)));
 		return code.toString();
-	}
-
-	// Retrieve base salary based on employee position
-	private static double getBaseSalary(Class<?> positionClass) {
-		if (positionClass == Manager.class)
-			return 8000000;
-		if (positionClass == Supervisor.class)
-			return 6000000;
-		if (positionClass == Admin.class)
-			return 4000000;
-		return 0;
 	}
 
 	// Apply salary bonuses based on number of employees in a position
@@ -90,19 +79,11 @@ public class Main {
 
 		// Apply bonus if conditions met
 		if (bonusRecipients > 0) {
-			double bonusPercentage = 0;
-			if (positionClass == Manager.class)
-				bonusPercentage = 0.10;
-			if (positionClass == Supervisor.class)
-				bonusPercentage = 0.075;
-			if (positionClass == Admin.class)
-				bonusPercentage = 0.05;
-
 			// Prepare list of eligible employees
 			ArrayList<Employee> eligibleEmployees = new ArrayList<>();
 			for (Employee emp : employees) {
 				if (positionClass.isInstance(emp)) {
-					emp.setSalary(getBaseSalary(positionClass));
+					emp.resetToBaseSalary();
 					eligibleEmployees.add(emp);
 				}
 			}
@@ -112,7 +93,7 @@ public class Main {
 			int bonusCount = 0;
 			for (Employee emp : eligibleEmployees) {
 				if (bonusCount < bonusRecipients) {
-					emp.setSalary(emp.getSalary() * (1 + bonusPercentage));
+					emp.applyBonus();
 					bonusReceiverIds.add(emp.getEmployeeCode());
 					bonusCount++;
 				}
@@ -120,8 +101,9 @@ public class Main {
 
 			// Print bonus recipients
 			if (!bonusReceiverIds.isEmpty()) {
+				Employee sampleEmployee = eligibleEmployees.get(0);
 				System.out.printf("Bonus sebesar %.1f%% telah diberikan kepada karyawan dengan id ",
-						bonusPercentage * 100);
+						sampleEmployee.getBonusPercentage() * 100);
 				System.out.print(String.join(", ", bonusReceiverIds));
 				System.out.println("");
 			}
@@ -155,23 +137,19 @@ public class Main {
 		} while (!position.equals("Manager") && !position.equals("Supervisor") && !position.equals("Admin"));
 
 		// Create new employee based on position
-		double salary = 0;
 		String employeeCode = generateEmployeeCode();
 		Employee newEmployee = null;
 
 		switch (position) {
-		case "Manager":
-			salary = getBaseSalary(Manager.class);
-			newEmployee = new Manager(employeeCode, name, sex, salary);
-			break;
-		case "Supervisor":
-			salary = getBaseSalary(Supervisor.class);
-			newEmployee = new Supervisor(employeeCode, name, sex, salary);
-			break;
-		case "Admin":
-			salary = getBaseSalary(Admin.class);
-			newEmployee = new Admin(employeeCode, name, sex, salary);
-			break;
+			case "Manager":
+				newEmployee = new Manager(employeeCode, name, sex);
+				break;
+			case "Supervisor":
+				newEmployee = new Supervisor(employeeCode, name, sex);
+				break;
+			case "Admin":
+				newEmployee = new Admin(employeeCode, name, sex);
+				break;
 		}
 
 		employees.add(newEmployee);
@@ -258,17 +236,15 @@ public class Main {
 		// Create updated employee
 		Employee updatedEmployee = null;
 		switch (newPosition) {
-		case "Manager":
-			updatedEmployee = new Manager(currentEmployee.getEmployeeCode(), newName, newSex,
-					getBaseSalary(Manager.class));
-			break;
-		case "Supervisor":
-			updatedEmployee = new Supervisor(currentEmployee.getEmployeeCode(), newName, newSex,
-					getBaseSalary(Supervisor.class));
-			break;
-		case "Admin":
-			updatedEmployee = new Admin(currentEmployee.getEmployeeCode(), newName, newSex, getBaseSalary(Admin.class));
-			break;
+			case "Manager":
+				updatedEmployee = new Manager(currentEmployee.getEmployeeCode(), newName, newSex);
+				break;
+			case "Supervisor":
+				updatedEmployee = new Supervisor(currentEmployee.getEmployeeCode(), newName, newSex);
+				break;
+			case "Admin":
+				updatedEmployee = new Admin(currentEmployee.getEmployeeCode(), newName, newSex);
+				break;
 		}
 
 		// Replace employee and apply bonuses if position changed
